@@ -1,0 +1,128 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using System.Data.SqlClient;
+
+namespace WindowsFormsApp1
+{
+    public partial class Form1 : Form
+    {
+        DataTable Artikl = new DataTable();
+       
+        int red = 0;
+        string cs = "Data source=DESKTOP-QKR2SO4; Initial catalog=Artikl; Integrated security=true";
+        public Form1()
+        {
+            InitializeComponent();
+        }
+        private void osvezi(int x)
+        {
+                txt_id.Text = student.Rows[x]["ID"].ToString();
+                txt_naziv.Text = student.Rows[x]["naziv"].ToString();
+                txt_cena.Text = student.Rows[x]["cena"].ToString();
+                txt_pdv.Text = student.Rows[x]["pdv"].ToString();
+                txt_jedinica_mere.Text = student.Rows[x]["jedinica_mere"].ToString();
+        }
+        private void Form1_Load(object sender, EventArgs e)
+        {
+           
+            SqlConnection veza = new SqlConnection(cs);
+            SqlDataAdapter adapter = new SqlDataAdapter("select * from Artikl " ,veza);
+            adapter.Fill(Artikl);
+            // MessageBox.Show(student.Rows.Count.ToString());
+
+            osvezi(red);
+
+
+        }
+
+        private void txt_redovan_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void lbl_redovan_Click(object sender, EventArgs e)
+        {
+
+        }
+         
+        private void button2_Click(object sender, EventArgs e)
+        {
+            if(red < Artikl.Rows.Count - 1)
+            {
+                red++;
+                osvezi(red);
+            }
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            if (red > 0)
+            {
+                red--;
+                osvezi(red);
+            }
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            red = Artikl.Rows.Count - 1;
+            osvezi(red);
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            red = 0;
+            osvezi(red);
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            SqlConnection veza = new SqlConnection(cs);
+            SqlCommand naredba = new SqlCommand("DELETE FROM Artikl WHERE ID=" + txt_id.Text , veza);
+            veza.Open();
+            naredba.ExecuteNonQuery();
+            veza.Close();
+            SqlDataAdapter adapter = new SqlDataAdapter("select * from Artikl", veza);
+            student.Clear();
+            adapter.Fill(Artikl);
+            if (red == Artikl.Rows.Count) red = red - 1;
+            if (red == 0) red = 1;
+
+            osvezi(red);
+        }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            SqlConnection veza = new SqlConnection(cs);
+            SqlCommand naredba = new SqlCommand("Update Artikl Set naziv= '"+txt_naziv.Text + "' , pdv= '" +txt_pdv.Text +"', cena= '"+ txt_cena.Text +"' , jedinica_mere = '" +txt_jedinica_mere.Text +"' where ID= " + txt_id.Text, veza);
+            veza.Open();
+            naredba.ExecuteNonQuery();
+            veza.Close();
+            SqlDataAdapter adapter = new SqlDataAdapter("select * from Artikl", veza);
+            Artikl.Clear();
+            adapter.Fill(Artikl);
+            osvezi(red);
+        }
+
+        private void button7_Click(object sender, EventArgs e)
+        {
+            SqlConnection veza = new SqlConnection(cs);
+            MessageBox.Show("insert into Artikl (id , naziv , cena, jedinica_mere, pdv) values (" + txt_id.Text + ", '" + txt_naziv.Text + "' ,'" + txt_cena.Text + "', '" + txt_jedinica_mere.Text + "' , '" + txt_pdv.Text " ');
+           SqlCommand naredba = new SqlCommand("insert into Artikl (id , naziv , cena, jedinica_mere, pdv) values (" + txt_id.Text + ", '" + txt_naziv.Text + "' ,'" + txt_cena.Text + "', '" + txt_jedinica_mere.Text + "' , '" + txt_pdv.Text " ')", veza);
+            veza.Open();
+            naredba.ExecuteNonQuery();
+            veza.Close();
+            SqlDataAdapter adapter = new SqlDataAdapter("select * from Artikl", veza);
+            Artikl.Clear();
+            adapter.Fill(Artikl);
+            osvezi(red);
+	}
+    }
+}
